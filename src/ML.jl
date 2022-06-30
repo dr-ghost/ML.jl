@@ -1,5 +1,7 @@
 module ML
 
-greet() = print("Hello World!")
+export greet
+
+greet() = "Hello ML Warriors"
 
 end # module
