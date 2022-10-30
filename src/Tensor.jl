@@ -1,44 +1,56 @@
 __precompile__()
 
-module Tensor
+module Tensors
 
-import Base.@pure
+    import Base.@pure
 
-import Statistics
+    import Statistics
 
-using LinearAlgebra
-using StaticArrays
-
-include("autograd.jl")
-
-#exports
-export ⋅, ×, dot, diagm, tr, det, norm, eigvals, eigvecs, eigen, mean
-export AbstractTensor, tensor
+    using LinearAlgebra
+    using StaticArrays
 
 
-abstract type AbstractTensor{order, dim, T <: Number} <: AbstractArray{T, order} end
 
-struct tensor{order, dim, T <: Number, M} <: AbstractTensor{order, dim, T}
-    data::NTuple{M, T}
-    tensor{order, dim, T, M}(data::NTuple) where {order, dim, T, M} = new{order, dim, T, M}(data)
-end
+    #exports
+    export ⋅, ×, dot, diagm, tr, det, norm, eigvals, eigvecs, eigen, mean
+    export AbstractTensor, Tensor
+    export normal
 
-# Utility functions
+    abstract type AbstractTensor{order, dim, T <: Number} <: AbstractArray{T, order} end
 
-get_data(t::AbstractTensor) = t.data
+    struct Tensor{order, dim, T <: Number, M} <: AbstractTensor{order, dim, T}
+        data::NTuple{M, T}
+        grad::Bool
+        Tensor{order, dim, T, M}(data::NTuple, grad::Bool) where {order, dim, T, M} = new{order, dim, T, M}(data, grad)
+    end
 
-@pure n_components(::Type{tensor{order, dim}}) where {order, dim} = dim^order
-@pure get_type(::Type{Type{x}}) where {x} = x
-@pure get_base(::Type{<:tensor{order, dim}}) where {order, dim} = Tensor{order, dim}
+    #manipulation
+    
 
-@pure Base.eltype(::Type{tensor{order, dim, T, M}}) where {order, dim, T, M} = T
-@pure Base.eltype(::Type{tensor{order, dim, T}})    where {order, dim, T}    = T
-@pure Base.eltype(::Type{tensor{order, dim}})       where {order, dim}       = Any
+    # Utility functions
 
-##
-Base.IndexStyle(::Type{<:tensor}) = IndexLinear()
+    get_data(t::AbstractTensor) = t.data
 
-##size
-@pure Base.size(::Type{tensor{order, dim}}) where {order, dim} = (dim, )^order
+    @pure n_components(::Type{Tensor{order, dim}}) where {order, dim} = dim^order
+    @pure get_type(::Type{Type{x}}) where {x} = x
+    @pure get_base(::Type{<:Tensor{order, dim}}) where {order, dim} = Tensor{order, dim}
+
+    @pure Base.eltype(::Type{Tensor{order, dim, T, M}}) where {order, dim, T, M} = T
+    @pure Base.eltype(::Type{Tensor{order, dim, T}})    where {order, dim, T}    = T
+    @pure Base.eltype(::Type{Tensor{order, dim}})       where {order, dim}       = Any
+
+    ##
+    Base.IndexStyle(::Type{<:Tensor}) = IndexLinear()
+
+    ##size
+    @pure Base.size(::Type{Tensor{order, dim}}) where {order, dim} = (dim, )^order
+
+    # Distribution
+
+    @pure Base.rand(::Type{Tensor{order, dim, T}}) where {order, dim, T} = Tensor{order, dim, T, dim^order}(rand(T, dim^order), false)
+
+    @pure Base.zeros(::Type{Tensor{order, dim, T}}) where {order, dim, T} = Tensor{order, dim, T, dim^order}(zeros(T, dim^order), false)
+
+    @pure normal(::Type{Tensor{order, dim, T}}) where {order, dim, T} = Tensor{order, dim, T, dim^order}(randn(T, dim^order), false)
 
 end
