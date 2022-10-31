@@ -1,5 +1,9 @@
 module ML
 
+using Statistics
+using LinearAlgebra
+using StaticArrays
+
 export greet, Linear_Regression
 
 include("Tensor.jl")

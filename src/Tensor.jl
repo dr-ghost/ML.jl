@@ -4,12 +4,6 @@ module Tensors
 
     import Base.@pure
 
-    import Statistics
-
-    using LinearAlgebra
-    using StaticArrays
-
-
 
     #exports
     export ⋅, ×, dot, diagm, tr, det, norm, eigvals, eigvecs, eigen, mean
