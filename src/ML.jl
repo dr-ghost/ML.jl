@@ -15,6 +15,6 @@ include("Train.jl")
 
 include("models/Linear_Regression.jl")
 
-greet() = "Hello AI Warriors"
+greet() = "Welcome .. Welcome to Hogwarts lil' slytherin!!! "
 
 end
