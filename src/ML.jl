@@ -1,8 +1,6 @@
 module ML
 
-using Statistics
-using LinearAlgebra
-using StaticArrays
+using Statistics, LinearAlgebra, StaticArrays, Plots
 
 export greet, Linear_Regression
 

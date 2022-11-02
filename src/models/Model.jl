@@ -52,9 +52,13 @@ module Models
         return nn(model, x)
     end
 
-    function plot(model::Model, key::Tensor, value::Tensor, train)
+    function plot(model::Model, key::Tensor, value::Tensor, b_train)
         @assert hasproperty(model, :trainer) "Model not trainable"
-        error("Not implemented")
+        
+        p = plot()
+
+        plot!(p, key, value, label = b_train ? "Train" : "Val", xlabel = model.progress_board.xLabel, ylabel = model.progress_board.yLabel, xlim = model.progress_board.xLim, ylim = model.progress_board.yLim, xscale = model.progress_board.xscale, yscale = model.progress_board.yscale, title = "Loss", legend = :topleft)
+
     end
 
     function training_step(model::Model, batch::Tensor)
