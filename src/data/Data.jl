@@ -5,17 +5,20 @@ module Data
     export DataModule, train_dataloader, val_dataloader, get_dataloader
     
     using ..HyperParameters
-    struct DataModule <: HyperParameter
-        root::String
-        num_workers::Integer
-        function DataModule(root::String="..../data", num_workers::Integer = 4)
-            t = new(root, num_workers)
-            save_hyperparameters(t)
-            return t
+    
+    abstract type DataModule <: HyperParameter end
+
+    function data_init(data::DataModule, root = "../data", num_workers = 2)
+        if hasfield(data, :root)
+            data.root = root
         end
+        if hasfield(data, :num_workers)
+            data.num_workers = num_workers
+        end
+        save_hyperparameters(data)
     end
 
-    function get_dataloader(data::DataModule, train::Bool)
+    function get_dataloader(data::DataModule, b_train::Bool)
         error("Not implemented")
     end
    
