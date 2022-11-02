@@ -37,14 +37,19 @@ end
 
 module Models
 
-    using ..Tensors
-    using ..HyperParameters
+    using ..Tensors, ..HyperParameters, ..Losses
 
     export Model, loss, forward, plot, training_step 
     abstract type Model <:HyperParameter end
 
     function loss(model::Model, ŷ::Tensor, y::Tensor)::Float64
-        error("Not implemented")
+        if (hasproperty(model, :squared_loss))
+            squared_loss(ŷ, y)
+        elseif (hasproperty(model, :cross_entropy_loss))
+            cross_entropy_loss(ŷ, y)
+        else
+            error("Not implemented")
+        end
     end
 
     function forward(model::Model, x::Tensor)::Tensor
