@@ -1,48 +1,27 @@
 __precompile__()
 
-module HyperParameters
+module _HyperParameter_
 
     export  HyperParameter, save_hyperparameters
 
     abstract type HyperParameter end
 
-    function save_hyperparameters(param::HyperParameter, ignore::Array = [])
-        error("Not implemented")
+    function save_hyperparameters(model::HyperParameter, path::String)
     end
 end
 
-module Progress
-    using ..HyperParameters
-    
-    export ProgressBoard
-
-    struct ProgressBoard <: HyperParameter
-        xLabel::String
-        yLabel::String
-        xLim::Tuple
-        yLim::Tuple
-        xscale::String
-        yscale::String
-        fig
-        figsize::Tuple
-        axes
-        display::Bool
-        function ProgressBoard(xLabel="", yLabel = "", xLim = 0.0, yLim = 0.0, xscale = "", yscale = "", fig = nothing, figsize = (3, 2), axes = nothing, display = false)
-            tmp = new(xLabel, yLabel, xLim, yLim, xscale, yscale, fig, figsize, axes, display)
-            save_hyperparameters(tmp)
-            return tmp
-        end
-    end
+module _Progress_
+    using .._HyperParameter_
 end
 
-module Models
+module _Model_
 
-    using ..Tensors, ..HyperParameters, ..Losses
+    using .._HyperParameter_, .._Loss_, .._nn_, StaticArrays
 
     export Model, loss, forward, plot, training_step 
     abstract type Model <:HyperParameter end
 
-    function loss(model::Model, ŷ::Tensor, y::Tensor)::Float64
+    function loss(model::Model, ŷ::SArray, y::SArray)::Float64
         if (hasproperty(model, :squared_loss))
             squared_loss(ŷ, y)
         elseif (hasproperty(model, :cross_entropy_loss))
@@ -52,28 +31,28 @@ module Models
         end
     end
 
-    function forward(model::Model, x::Tensor)::Tensor
+    function forward(model::Model, x::SArray)::SArray
         @assert hasproperty(model, :net) "Neural network not defined"
-        return nn(model, x)
     end
 
-    function plot(model::Model, key::Tensor, value::Tensor, b_train)
+    """
+    function plot(model::Model, key::SArray, value::SArray, b_train)
         @assert hasproperty(model, :trainer) "Model not trainable"
-        
         p = plot()
 
         plot!(p, key, value, label = b_train ? "Train" : "Val", xlabel = model.progress_board.xLabel, ylabel = model.progress_board.yLabel, xlim = model.progress_board.xLim, ylim = model.progress_board.yLim, xscale = model.progress_board.xscale, yscale = model.progress_board.yscale, title = "Loss", legend = :topleft)
 
     end
+    """
 
-    function training_step(model::Model, batch::Tensor)
+    function training_step(model::Model, batch::SArray)
         l = loss(model, forward(model, batch[:length(batch)-1]), batch[-1])    
-        plot(model, :loss, l, true)
+        #plot(model, :loss, l, true)
         return l
     end
 
-    function validation_step(model::Model, batch::Tensor)
+    function validation_step(model::Model, batch::SArray)
         l = loss(model, forward(model, batch[:length(batch)-1]), batch[-1])    
-        plot(model, :loss, l, true)
+        #plot(model, :loss, l, true)
     end
 end

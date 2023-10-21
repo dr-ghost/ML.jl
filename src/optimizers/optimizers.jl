@@ -1,9 +1,9 @@
 __precompile__()
 
-module Optimizers
+module _Optimizer_
     export Optimizer, SDG, Adam
 
-    using ..HyperParameters
+    using .._HyperParameter_
 
     abstract type Optimizer <: HyperParameter end
 

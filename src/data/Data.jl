@@ -1,11 +1,11 @@
 __precompile__()
 
-module Data
+module _Data_
 
+    using .._HyperParameter_
+    
     export DataModule, train_dataloader, val_dataloader, get_dataloader
-    
-    using ..HyperParameters
-    
+        
     abstract type DataModule <: HyperParameter end
 
     function data_init(data::DataModule, root = "../data", num_workers = 2)

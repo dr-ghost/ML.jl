@@ -1,11 +1,11 @@
 __precompile__()
 
-module Train
+module _Train_
 
     export Trainer , data_prep, prepare_model, fit, configure_optimizers
 
-    using ..HyperParameters, ..Data, ..Models
-    using  ..Optimizers
+    using .._HyperParameter_, .._Data_, .._Model_
+    using  .._Optimizer_
 
     struct Trainer <: HyperParameter
         max_epochs::Integer
